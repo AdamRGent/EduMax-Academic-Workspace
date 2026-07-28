@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EduMax - Edit Announcement</title>
+    <!-- Assignment Spec Meta Requirements -->
+    <meta name="author" content="TM252 Module Team">
+    <meta name="description" content="An online learning resource by students for students - Admin View">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- INDEPENDENT STYLING BLOCK (Bypasses OneDrive & Web Connection Drops) -->
+    <style>
+        html { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.5; background-color: #f8f9fa; }
+        body { margin: 0; background-color: #f8f9fa; color: #212529; padding: 2rem 0; }
+        .container { width: 100%; padding-right: 15px; padding-left: 15px; margin-right: auto; margin-left: auto; max-width: 1140px; box-sizing: border-box; }
+        .row { display: flex; flex-wrap: wrap; margin-right: -15px; margin-left: -15px; }
+        .col-md-4 { flex: 0 0 auto; width: 33.333333%; padding: 0 15px; box-sizing: border-box; }
+        .col-md-6 { flex: 0 0 auto; width: 50%; padding: 0 15px; box-sizing: border-box; }
+        .col-md-8 { flex: 0 0 auto; width: 66.666667%; padding: 0 15px; box-sizing: border-box; }
+        .col-12 { flex: 0 0 auto; width: 100%; padding: 0 15px; box-sizing: border-box; }
+        .justify-content-center { justify-content: center; }
+        .align-items-center { align-items: center; }
+        .d-flex { display: flex; }
+        .justify-content-end { justify-content: end; }
+        .gap-2 { gap: 0.5rem; }
+        
+        /* Design Colors & Margins */
+        .bg-dark { background-color: #212529 !important; color: #fff; padding: 10px; border-radius: 0.375rem; }
+        .bg-white { background-color: #fff !important; }
+        .text-center { text-align: center; }
+        .text-end { text-align: right; }
+        .fw-bold { font-weight: 700; }
+        .mb-3 { margin-bottom: 1rem; }
+        .mb-4 { margin-bottom: 1.5rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1.5rem; }
+        .mt-5 { margin-top: 3rem; }
+        .p-4 { padding: 1.5rem; }
+        .pt-4 { padding-top: 1.5rem; }
+        .border-top { border-top: 1px solid #dee2e6 !important; }
+        .border-bottom { border-bottom: 1px solid #dee2e6 !important; }
+        .rounded { border-radius: 0.375rem; }
+        .shadow-sm { box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); }
+        .img-fluid { max-width: 100%; height: auto; }
+        
+        /* Menus & Form Fields */
+        .navbar-nav { display: flex; list-style: none; margin: 0; padding: 0; gap: 1rem; align-items: center; flex-direction: row; }
+        .nav-link { color: rgba(255,255,255,0.55); text-decoration: none; padding: 0.5rem 0; font-weight: 500; }
+        .nav-link.active { color: #fff; font-weight: 700; }
+        .badge { display: inline-block; padding: 0.35em 0.65em; font-size: 0.75em; font-weight: 700; border-radius: 0.375rem; }
+        .bg-secondary { background-color: #6c757d !important; color: #fff; }
+        .breadcrumb { display: flex; padding: 0; margin-bottom: 1.5rem; list-style: none; gap: 0.5rem; }
+        .breadcrumb a { text-decoration: none; color: #0d6efd; }
+        .form-label { display: inline-block; margin-bottom: 0.5rem; font-weight: 600; color: #495057; }
+        .form-control, .form-select { display: block; width: 100%; padding: 0.375rem 0.75rem; font-size: 1rem; line-height: 1.5; color: #212529; background-color: #fff; border: 1px solid #ced4da; border-radius: 0.375rem; box-sizing: border-box; }
+        .form-text { margin-top: 0.25rem; font-size: 0.875em; color: #6c757d; }
+        .text-danger { color: #dc3545; }
+        .text-primary { color: #0d6efd; }
+        
+        /* Action Buttons styling rules */
+        .btn { display: inline-block; font-weight: 600; text-align: center; vertical-align: middle; cursor: pointer; border: 1px solid transparent; padding: 0.5rem 1.25rem; font-size: 1rem; border-radius: 0.375rem; text-decoration: none; }
+        .btn-outline-secondary { color: #6c757d; border-color: #6c757d; background-color: transparent; }
+        .text-white-50 { color: rgba(255,255,255,0.5); font-size: 0.85rem; }
+        .visually-hidden-focusable { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+    </style>
+</head>
+<body>
+    
+    <a href="#main-content" class="visually-hidden-focusable">Skip to main content</a>
+
+    <div class="container">
