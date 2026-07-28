@@ -130,7 +130,57 @@
                         <h2 class="mb-4 border-bottom pb-3 text-primary fw-bold" style="font-size: 1.6rem; margin-top:0;">Edit Announcement Data Entry</h2>
                         
                         <!-- Form targeting the mandated external Open University Reflector script URL -->
-                        <form action="https://open.ac.uk" method="post">
+                        <form action="https://students.open.ac.uk/mct/tm252/reflect/reflect.php" method="post">
                             
                             <!-- Mandatory hidden data parameter tracking identifier token value -->
                             <input type="hidden" name="item_ID" value="30001000-5000-654321fedcba">
+                            <!-- Announcement Title Input Box Field -->
+                            <div class="mb-4">
+                                <label for="announcementTitle" class="form-label">Announcement Title <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="announcementTitle" name="title" value="Welcome to the New Academic Term!" required>
+                                <div id="titleHelp" class="form-text">Provide a concise, descriptive header string for students.</div>
+                            </div>
+
+                            <!-- Mobile-Responsive Form Spacing Layout Grid Columns Splitter -->
+                            <div class="row mb-4">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <label for="publishDate" class="form-label">Publish Date <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="publishDate" name="publish_date" value="2026-09-01" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="priority" class="form-label">Priority Classification Group</label>
+                                    <select id="priority" name="priority" class="form-select">
+                                        <option value="low">Low Level Notice</option>
+                                        <option value="medium" selected>Normal / Standard Priority</option>
+                                        <option value="high">High / Urgent System Notice</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Content Description Body Text Box Area -->
+                            <div class="mb-4">
+                                <label for="announcementBody" class="form-label">Announcement Content Body Text <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="announcementBody" name="body" rows="5" required>Dear students, welcome back to EduMax. Please check your personalized dashboard schedules for updated tutorial times and assigned tutor groups. Ensure all block readings are completed ahead of your first seminar.</textarea>
+                            </div>
+
+                            <!-- Form actions footer row aligned beautifully side-by-side in administrative grey -->
+                            <div class="d-flex justify-content-end gap-2 border-top pt-4 mt-4">
+                                <button type="button" class="btn btn-outline-secondary px-4 py-2">Cancel Changes</button>
+                                <button type="submit" class="btn bg-secondary text-white fw-bold px-4 py-2 border-0 shadow-sm" style="background-color: #5a6268 !important;">Update Announcement</button>
+                            </div>
+
+                        </form> 
+                    </section>
+
+                </div> 
+            </div> 
+        </main> 
+
+        <!-- Institutional Signature Page Footer Component -->
+        <footer class="text-center mt-5 py-4 border-top" style="color: #6c757d;">
+            <small>&copy; 2026 EduMax Virtual Academic Workspace. System Mockup Protocol.</small>
+        </footer>
+
+    </div> <!-- Closes .container -->
+</body>
+</html>
