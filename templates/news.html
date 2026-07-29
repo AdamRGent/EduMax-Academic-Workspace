@@ -88,6 +88,7 @@
                             {% if session.logged_in and session.is_admin %}
                                 <li style="color: rgba(255,255,255,0.3); padding: 0 0.25rem;">|</li>
                                 <li><a class="nav-link" href="/form">Edit Announcement</a></li>
+                                <li><a class="nav-link" href="{{ url_for('edit_users') }}">Edit Users</a></li>
                             {% endif %}
                         </ul>
                     </nav>
