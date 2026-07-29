@@ -55,7 +55,11 @@
         <header class="header mb-4">
             <div class="row align-items-center mb-3" style="margin-top: 1rem;">
                 <div class="col-md-4">
-                    <img src="./images/EduMax_logo.png" alt="EduMax logo" class="img-fluid">
+                    <!-- The correct, secure way to route images in a Flask framework application -->
+                    <!-- Explicitly scaling your logo asset so it pops cleanly next to your text title -->
+                    <img src="{{ url_for('static', filename='images/EduMax_logo.png') }}" 
+                        alt="EduMax logo" 
+                        style="height: 75px; width: auto; object-fit: contain; margin-right: 15px;">
                 </div>
                 <div class="col-md-4 text-center">
                     <h1 class="fw-bold" style="font-size: 2.8rem; margin: 0; color:#212529;">EduMax</h1>
