@@ -108,6 +108,90 @@ def edit_announcement_route(announcement_id):
     announcement = cursor.fetchone()
     return render_template('form.html', post=announcement)
 
+@app.route('/admin/users')
+def edit_users():
+
+    # Security guard line
+    if not session.get('logged_in') or not session.get('is_admin'):
+        return render_template('login.html', error="Admin access required.")
+    
+    connection = sqlite3.connect('edumax.db')
+    cursor = connection.cursor()
+
+    cursor.execute('SELECT * FROM users')
+    user_list = cursor.fetchall()
+    
+    return render_template('users_manager.html', accounts=user_list)
+
+@app.route('/admin/delete/<int:user_id>')
+def delete_user_route(user_id):
+    # Security guard line
+    if not session.get('logged_in') or not session.get('is_admin'):
+        return render_template('login.html', error="Admin access required.")
+    
+    connection = sqlite3.connect('edumax.db')
+    cursor = connection.cursor()
+
+    cursor.execute('DELETE FROM users WHERE id = ?', (user_id,))
+
+    connection.commit()
+    connection.close()
+
+    print(f"Purged record item matching ID: {user_id}")
+
+     # Pack a temporary text warning notification box message
+   
+
+    return redirect(url_for('edit_users'))
+
+@app.route('/form/edit/<int:user_id>')
+def edit_user_route(user_id):
+    # Security guard line
+    if not session.get('logged_in') or not session.get('is_admin'):
+        return render_template('login.html', error="Admin access required.")
+    
+    connection = sqlite3.connect('edumax.db')
+    cursor = connection.cursor()
+
+    cursor.execute('SELECT * FROM users WHERE id = ?', (user_id,))
+    user = cursor.fetchone()
+    return render_template('user_form.html', post=user)
+
+# --- 1. ADMIN ACTION: RENDER BLANK USER ACC CREATION FORM ---
+@app.route('/admin/users/new', methods=['GET'])
+def new_user_form():
+    if not session.get('logged_in') or not session.get('is_admin'):
+        return render_template('login.html', error="Admin access required.")
+    
+    # Loads a clean user data entry template form canvas
+    return render_template('user_form.html')
+
+
+# --- 2. ADMIN ACTION: PROCESS USER ACCOUNT REGISTRATION ---
+# --- ADMIN ONLY: FETCH USER DATA AND LOAD USER FORM IN EDIT MODE ---
+@app.route('/admin/edit/<int:user_id>', methods=['GET'])
+def edit_user_load_page(user_id):
+    if not session.get('logged_in') or not session.get('is_admin'):
+        return render_template('login.html', error="Admin access required.")
+    
+    connection = sqlite3.connect('edumax.db')
+    cursor = connection.cursor()
+    
+    # Securely retrieve the exact user profile tuple row by its unique ID
+    cursor.execute('SELECT id, username, password, is_admin FROM users WHERE id = ?', (user_id,))
+    user_account = cursor.fetchone()
+    connection.close()
+    
+    # If the user doesn't exist in the database, protect the app from crashing
+    if not user_account:
+        flash("System Error: Account profile not found.", "danger")
+        return redirect(url_for('edit_users'))
+        
+    # Open your user form canvas, passing the account rows under the nickname 'account'
+    return render_template('user_form.html', account=user_account)
+
+
+
 
 # --- THE BACKEND SUBMISSION PROCESSOR (HANDLES BOTH ADD & EDIT) ---
 @app.route('/add_announcement', methods=['POST'])
