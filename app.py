@@ -317,6 +317,7 @@ def login_process():
         session['is_admin'] = (user_row[3] == 1) # Becomes True if 1, False if 0
     
         print(f"User {form_username} authenticated successfully. Admin state: {session['is_admin']}")
+        record_activity(f"User successfully logged in")
         return redirect(url_for('home_page')) # Redirect safely back to the home page
 
     else:
@@ -327,6 +328,9 @@ def login_process():
 # --- THE BACKEND LOGOUT HANDLER ---
 @app.route('/logout')
 def logout_process():
+    if session.get('logged_in'):
+        # Log the logout action while the session username still exists
+        record_activity(f"User logged out safely")
     # 1. Clear out all saved session cookie keys (logged_in, username, is_admin)
     session.clear()
     
