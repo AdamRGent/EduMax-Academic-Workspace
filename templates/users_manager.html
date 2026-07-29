@@ -111,7 +111,7 @@
                         <a href="{{ url_for('new_user_form') }}" class="btn-add">＋ Add New User Account</a>
                 </div>
 
-                <!-- Place this directly above your user accounts table inside users_manager.html -->
+                
                 <form method="GET" action="{{ url_for('edit_users') }}" style="margin-bottom: 20px;">
                 <!-- Keeps the typed string in place after submission, or stays blank on first load -->
                     <input type="text" name="search" placeholder="Search by username..." value="{{ search_query }}">
