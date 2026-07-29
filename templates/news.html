@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EduMax - News Feed</title>
+    <meta name="author" content="TM252 Module Team">
+    <meta name="description" content="An online learning resource by students for students - News Feed">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <style>
+        html { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.5; background-color: #f8f9fa; }
+        body { margin: 0; background-color: #f8f9fa; color: #212529; padding: 2rem 0; }
+        .container { width: 100%; padding-right: 15px; padding-left: 15px; margin-right: auto; margin-left: auto; max-width: 1140px; box-sizing: border-box; }
+        .row { display: flex; flex-wrap: wrap; margin-right: -15px; margin-left: -15px; }
+        .col-md-4 { flex: 0 0 auto; width: 33.333333%; padding: 0 15px; box-sizing: border-box; }
+        .col-md-6 { flex: 0 0 auto; width: 50%; padding: 0 15px; box-sizing: border-box; }
+        .col-md-8 { flex: 0 0 auto; width: 66.666667%; padding: 0 15px; box-sizing: border-box; }
+        .col-12 { flex: 0 0 auto; width: 100%; padding: 0 15px; box-sizing: border-box; }
+        .justify-content-center { justify-content: center; }
+        .align-items-center { align-items: center; }
+        .d-flex { display: flex; }
+        .justify-content-end { justify-content: end; }
+        .gap-2 { gap: 0.5rem; }
+        
+        .bg-dark { background-color: #212529 !important; color: #fff; padding: 10px; border-radius: 0.375rem; }
+        .bg-white { background-color: #fff !important; }
+        .text-center { text-align: center; }
+        .text-end { text-align: right; }
+        .fw-bold { font-weight: 700; }
+        .mb-3 { margin-bottom: 1rem; }
+        .mb-4 { margin-bottom: 1.5rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1.5rem; }
+        .mt-5 { margin-top: 3rem; }
+        .p-4 { padding: 1.5rem; }
+        .pt-4 { padding-top: 1.5rem; }
+        .border-top { border-top: 1px solid #dee2e6 !important; }
+        .border-bottom { border-bottom: 1px solid #dee2e6 !important; }
+        .rounded { border-radius: 0.375rem; }
+        .shadow-sm { box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); }
+        .img-fluid { max-width: 100%; height: auto; }
+        
+        .navbar-nav { display: flex; list-style: none; margin: 0; padding: 0; gap: 1rem; align-items: center; flex-direction: row; }
+        .nav-link { color: rgba(255,255,255,0.55); text-decoration: none; padding: 0.5rem 0; font-weight: 500; }
+        .nav-link.active { color: #fff; font-weight: 700; }
+        .badge { display: inline-block; padding: 0.35em 0.65em; font-size: 0.75em; font-weight: 700; border-radius: 0.375rem; }
+        .bg-secondary { background-color: #6c757d !important; color: #fff; }
+        .breadcrumb { display: flex; padding: 0; margin-bottom: 1.5rem; list-style: none; gap: 0.5rem; }
+        .breadcrumb a { text-decoration: none; color: #0d6efd; }
+        .text-white-50 { color: rgba(255,255,255,0.5); font-size: 0.85rem; }
+        .visually-hidden-focusable { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+        
+        /* News Specific priority coloring blocks */
+        .priority-high { border-left: 5px solid #dc3545; }
+        .priority-medium { border-left: 5px solid #ffc107; }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="visually-hidden-focusable">Skip to main content</a>
+
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header mb-4">
+            <div class="row align-items-center mb-3" style="margin-top: 1rem;">
+                <div class="col-md-4">
+                    <img src="./images/EduMax_logo.png" alt="EduMax logo" class="img-fluid">
+                </div>
+                <div class="col-md-4 text-center">
+                    <h1 class="fw-bold" style="font-size: 2.8rem; margin: 0; color:#212529;">EduMax</h1>
+                </div>
+            </div>
+            
+            <div class="row bg-dark rounded shadow-sm">
+                <div class="col-md-8">
+                    <nav class="navbar">
+                        <ul class="navbar-nav flex-row">
+                            <li><a class="nav-link" href="{{ url_for('home_page') }}">Home</a></li>
+                            <li style="color: rgba(255,255,255,0.3); padding: 0 0.25rem;">|</li>
+                            <!-- News active link highlight applied -->
+                            <li><a class="nav-link active" href="{{ url_for('news_page') }}">News</a></li>
+                            <li style="color: rgba(255,255,255,0.3); padding: 0 0.25rem;">|</li>
+                            <li><a class="nav-link" href="{{ url_for('modules_page') }}">Modules</a></li>
+                            <li style="color: rgba(255,255,255,0.3); padding: 0 0.25rem;">|</li>
+                            <li><a class="nav-link" href="{{ url_for('membership_page') }}">Membership</a></li>
+                            
+                            {% if session.logged_in and session.is_admin %}
+                                <li style="color: rgba(255,255,255,0.3); padding: 0 0.25rem;">|</li>
+                                <li><a class="nav-link" href="/form">Edit Announcement</a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-md-4 text-end align-items-center d-flex justify-content-end">
+                    {% if session.logged_in %}
+                        <span class="text-white-50" style="padding-right: 15px;">
+                            <small>Logged in: {% if session.is_admin %}Admin{% else %}Student{% endif %}</small>
+                        </span>
+                        <a href="/logout" style="color: #0d6efd; font-size: 0.85rem; font-weight: bold; text-decoration: underline;">Sign Out</a>
+                    {% else %}
+                        <a href="{{ url_for('login_page') }}" style="color: #0d6efd; font-size: 0.85rem; font-weight: bold; text-decoration: underline;">Sign In</a>
+                    {% endif %}
+                </div>
+            </div>
+        </header>
+
+        <!-- Breadcrumbs Path -->
+        <div class="row mb-4">
+            <div class="col">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li><a href="{{ url_for('home_page') }}">Home</a></li>
+                        <li style="color: #6c757d;">/</li>
+                        <li style="color: #6c757d;">News</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+
+        
+    <!-- Main News Workspace Feed -->
+<main id="main-content" class="py-2">
+    <h2 class="fw-bold mb-4" style="color: #212529;">Latest Announcements Feed</h2>
+    
+    <!-- Jinja Loop: Iterates through your database row lists safely -->
+    {% for post in posts %}
+    <!-- Mapping columns perfectly: title=post[0], publish_date=post[1], priority=post[2], body=post[3] -->
+        <div class="bg-white p-4 rounded shadow-sm border mb-3 {% if post[2] == 'high' %}priority-high{% elif post[2] == 'medium' %}priority-medium{% endif %}">
+            <div class="d-flex justify-content-between mb-2">
+            
+            <!-- Safe Priority Tag Formatter (Clears your VS Code squiggly error marks) -->
+                {% if post[2] == 'high' %}
+                    <span class="fw-bold" style="font-size: 0.85rem; color: #dc3545;">[ {{ post[2]|upper }} PRIORITY ]</span>
+                {% elif post[2] == 'medium' %}
+                    <span class="fw-bold" style="font-size: 0.85rem; color: #ffc107;">[ {{ post[2]|upper }} PRIORITY ]</span>
+                {% else %}
+                    <span class="fw-bold" style="font-size: 0.85rem; color: #6c757d;">[ {{ post[2]|upper }} PRIORITY ]</span>
+                {% endif %}
+            
+            <!-- Dynamic Publish Date Component Box -->
+                <small style="color: #6c757d;">Published: {{ post[1] }}</small>
+            </div>
+        
+        <!-- Dynamic Announcement Header title row -->
+            <h3 class="fw-bold" style="margin: 0 0 0.5rem 0; font-size: 1.4rem;">{{ post[0] }}</h3>
+        
+        <!-- Dynamic Main Body description message paragraph block -->
+            <p style="color: #495057; margin: 0;">{{ post[3] }}</p>
+        </div>
+    {% else %}
+        <div class="bg-white p-4 rounded shadow-sm border text-center text-muted">
+        No active announcements found on the platform server workspace.
+        </div>
+    {% endfor %}
+
+</main>
+
+
+
+        <footer class="text-center mt-5 py-4 border-top" style="color: #6c757d;">
+            <small>&copy; 2026 EduMax Virtual Academic Workspace. System Mockup Protocol.</small>
+        </footer>
+    </div>
+</body>
+</html>

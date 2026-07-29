@@ -85,19 +85,23 @@
                 </div>
             </div>
             
-            <!-- Row 2: Dark Menu Bar Row matching your screenshot layout targets -->
+            <!-- Row 2: Dark Menu Bar Row matching the edumax layout targets -->
             <div class="row bg-dark rounded shadow-sm">
                 <div class="col-md-8">
                     <nav class="navbar">
-                        <ul class="navbar-nav">
-                            <li><a class="nav-link active" href="#">Home</a></li>
-                            <li style="color: rgba(255,255,255,0.3);">|</li>
-                            <li><a class="nav-link" href="#">News</a></li>
-                            <li style="color: rgba(255,255,255,0.3);">|</li>
-                            <li><a class="nav-link" href="#">Taster Modules</a></li>
-                            <li style="color: rgba(255,255,255,0.3);">|</li>
-                            <li><a class="nav-link" href="#">Membership</a></li>
+                        <nav class="navbar">
+                        
+                            <!-- Update your navigation links across ALL templates to use Python routing paths -->
+                        <ul class="navbar-nav flex-row">
+                            <li><a class="nav-link" href="{{ url_for('home_page') }}">Home</a></li>
+                            <li style="color: rgba(255,255,255,0.3); padding: 0 0.25rem;">|</li>
+                            <li><a class="nav-link" href="{{ url_for('news_page') }}">News</a></li>
+                            <li style="color: rgba(255,255,255,0.3); padding: 0 0.25rem;">|</li>
+                            <li><a class="nav-link" href="{{ url_for('modules_page') }}">Modules</a></li>
+                            <li style="color: rgba(255,255,255,0.3); padding: 0 0.25rem;">|</li>
+                            <li><a class="nav-link" href="{{ url_for('membership_page') }}">Membership</a></li>
                         </ul>
+                    </nav>
                     </nav>
                 </div>
                 <div class="col-md-4 text-end align-items-center d-flex justify-content-end">
@@ -122,46 +126,50 @@
         </div>
 
         <!-- Main Form Frame Canvas -->
-        <main id="main-content">
-            <div class="row justify-content-center">
-                <div class="col-12 col-md-10 bg-white p-4 shadow-sm rounded" style="border: 1px solid #dee2e6;">
+        <!-- Main Form Frame Canvas -->
+<main id="main-content">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 bg-white p-4 shadow-sm rounded" style="border: 1px solid #dee2e6;">
+            
+            <section>
+                <h2 class="mb-4 border-bottom pb-3 text-primary fw-bold" style="font-size: 1.6rem; margin-top:0;">Edit Announcement Data Entry</h2>
+                
+                <form action="{{ url_for('submit_announcement') }}" method="post">
                     
-                    <section>
-                        <h2 class="mb-4 border-bottom pb-3 text-primary fw-bold" style="font-size: 1.6rem; margin-top:0;">Edit Announcement Data Entry</h2>
-                        
-                        <!-- Form targeting the mandated external Open University Reflector script URL -->
-                        <form action="https://students.open.ac.uk/mct/tm252/reflect/reflect.php" method="post">
-                            
-                            <!-- Mandatory hidden data parameter tracking identifier token value -->
-                            <input type="hidden" name="item_ID" value="30001000-5000-654321fedcba">
-                            <!-- Announcement Title Input Box Field -->
-                            <div class="mb-4">
-                                <label for="announcementTitle" class="form-label">Announcement Title <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="announcementTitle" name="title" value="Welcome to the New Academic Term!" required>
-                                <div id="titleHelp" class="form-text">Provide a concise, descriptive header string for students.</div>
-                            </div>
+                    <!-- HIDDEN TRACKING FIELD: Quietly holds the SQLite row ID for the backend update query -->
+                    {% if post %}
+                        <input type="hidden" name="announcement_id" value="{{ post[0] }}">
+                    {% endif %}
+                    
+                    <!-- Announcement Title Input Box Field -->
+                    <div class="mb-4">
+                        <label for="announcementTitle" class="form-label">Announcement Title <span class="text-danger">*</span></label>
+                        <input type="text" value="{{ post[2] if post else '' }}" class="form-control" id="announcementTitle" name="title" required>
+                        <div id="titleHelp" class="form-text">Provide a concise, descriptive header string for students.</div>
+                    </div>
 
-                            <!-- Mobile-Responsive Form Spacing Layout Grid Columns Splitter -->
-                            <div class="row mb-4">
-                                <div class="col-md-6 mb-3 mb-md-0">
-                                    <label for="publishDate" class="form-label">Publish Date <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" id="publishDate" name="publish_date" value="2026-09-01" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="priority" class="form-label">Priority Classification Group</label>
-                                    <select id="priority" name="priority" class="form-select">
-                                        <option value="low">Low Level Notice</option>
-                                        <option value="medium" selected>Normal / Standard Priority</option>
-                                        <option value="high">High / Urgent System Notice</option>
-                                    </select>
-                                </div>
-                            </div>
+                    <!-- Mobile-Responsive Form Spacing Layout Grid Columns Splitter -->
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <label for="publishDate" class="form-label">Publish Date <span class="text-danger">*</span></label>
+                            <input type="date" value="{{ post[3] if post else '' }}" class="form-control" id="publishDate" name="publish_date" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="priority" class="form-label">Priority Classification Group</label>
+                            <select id="priority" name="priority" class="form-select">
+                                <option value="low" {% if post and post[4] == 'low' %}selected{% endif %}>Low Level Notice</option>
+                                <option value="medium" {% if not post or post[4] == 'medium' %}selected{% endif %}>Normal / Standard Priority</option>
+                                <option value="high" {% if post and post[4] == 'high' %}selected{% endif %}>High / Urgent System Notice</option>
+                            </select>
+                        </div>
+                    </div>
 
-                            <!-- Content Description Body Text Box Area -->
-                            <div class="mb-4">
-                                <label for="announcementBody" class="form-label">Announcement Content Body Text <span class="text-danger">*</span></label>
-                                <textarea class="form-control" id="announcementBody" name="body" rows="5" required>Dear students, welcome back to EduMax. Please check your personalized dashboard schedules for updated tutorial times and assigned tutor groups. Ensure all block readings are completed ahead of your first seminar.</textarea>
-                            </div>
+                    <!-- Content Description Body Text Box Area -->
+                    <div class="mb-4">
+                        <label for="announcementBody" class="form-label">Announcement Content Body Text <span class="text-danger">*</span></label>
+                        <!-- FIXED: Removed the value="..." attribute and placed the code inside the tag blocks -->
+                        <textarea class="form-control" id="announcementBody" name="body" rows="5" required>{{ post[5] if post else '' }}</textarea>
+                    </div>
 
                             <!-- Form actions footer row aligned beautifully side-by-side in administrative grey -->
                             <div class="d-flex justify-content-end gap-2 border-top pt-4 mt-4">
