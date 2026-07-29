@@ -190,6 +190,43 @@ def edit_user_load_page(user_id):
     # Open your user form canvas, passing the account rows under the nickname 'account'
     return render_template('user_form.html', account=user_account)
 
+# --- THE BACKEND USER PROCESSOR (HANDLES BOTH ADD & EDIT ACCOUNTS) ---
+@app.route('/admin/users/add', methods=['POST'])
+def submit_new_user():
+    if not session.get('logged_in') or not session.get('is_admin'):
+        return render_template('login.html', error="Admin access required.")
+    
+    # Pull parameters from the HTML form fields
+    form_user_id = request.form.get('user_id')
+    new_username = request.form.get('username')
+    new_password = request.form.get('password')
+    new_role = request.form.get('is_admin')
+    
+    connection = sqlite3.connect('edumax.db')
+    cursor = connection.cursor()
+    
+    # If form_user_id exists, we run an UPDATE to overwrite old data
+    if form_user_id:
+        cursor.execute("""
+            UPDATE users 
+            SET username = ?, password = ?, is_admin = ?
+            WHERE id = ?
+        """, (new_username, new_password, int(new_role), form_user_id))
+        flash('User account details updated successfully!', 'success')
+        
+    else:
+        # If form_user_id is missing, it is a brand new account, run an INSERT
+        cursor.execute("""
+            INSERT INTO users (username, password, is_admin) 
+            VALUES (?, ?, ?)
+        """, (new_username, new_password, int(new_role)))
+        flash('New user account added successfully!', 'success')
+        
+    connection.commit()
+    connection.close()
+        
+    # Route the administrator right back onto the user spreadsheet dashboard grid!
+    return redirect(url_for('edit_users'))
 
 
 
