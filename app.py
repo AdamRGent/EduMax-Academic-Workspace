@@ -1,5 +1,7 @@
-from flask import Flask, render_template, request, redirect, session, url_for, flash
+from flask import Flask, render_template, request, redirect, session, url_for, flash, Response
 import sqlite3
+import csv
+import io
 
 app = Flask(__name__)
 
@@ -365,7 +367,38 @@ def view_logs():
     
     return render_template('logs.html', logs=log_rows)
 
-
+@app.route('/admin/logs/download')
+def download_logs():
+    # Security guard checkpoint
+    if not session.get('logged_in') or not session.get('is_admin'):
+        return render_template('login.html', error="Admin access required.")
+        
+    # 1. Fetch all audit rows from the SQLite engine
+    connection = sqlite3.connect('edumax.db')
+    cursor = connection.cursor()
+    cursor.execute("SELECT timestamp, username, action FROM audit_logs ORDER BY id DESC")
+    log_rows = cursor.fetchall()
+    connection.close()
+    
+    # 2. Write the database results out into an in-memory CSV text stream buffer
+    output_stream = io.StringIO()
+    writer = csv.writer(output_stream)
+    
+    # Write structural headers first
+    writer.writerow(['Timestamp', 'Administrator', 'Action Performed'])
+    
+    # Dump the fetched tracking tuple rows down into the stream block
+    writer.writerows(log_rows)
+    
+    # Reset stream cursor pointer position back to start
+    output_stream.seek(0)
+    
+    # 3. Stream the raw CSV output data as a direct download attachment file block
+    return Response(
+        output_stream.getvalue(),
+        mimetype="text/csv",
+        headers={"Content-disposition": "attachment; filename=system_audit_logs.csv"}
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)
