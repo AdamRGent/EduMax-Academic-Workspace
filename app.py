@@ -109,19 +109,29 @@ def edit_announcement_route(announcement_id):
     return render_template('form.html', post=announcement)
 
 @app.route('/admin/users')
+@app.route('/admin/users')
 def edit_users():
-
-    # Security guard line
     if not session.get('logged_in') or not session.get('is_admin'):
         return render_template('login.html', error="Admin access required.")
     
+    # Defaults to an empty string if no search parameter exists in the URL
+    search_query = request.args.get('search', '').strip()
+    
     connection = sqlite3.connect('edumax.db')
     cursor = connection.cursor()
-
-    cursor.execute('SELECT * FROM users')
-    user_list = cursor.fetchall()
     
-    return render_template('users_manager.html', accounts=user_list)
+    if search_query:
+        # Runs ONLY when an admin types a query and hits 'Search'
+        cursor.execute('SELECT * FROM users WHERE username LIKE ?', (f'%{search_query}%',))
+    else:
+        # Runs automatically on first load, populating the page with ALL users
+        cursor.execute('SELECT * FROM users')
+        
+    user_list = cursor.fetchall()
+    connection.close()
+    
+    return render_template('users_manager.html', accounts=user_list, search_query=search_query)
+
 
 @app.route('/admin/delete/<int:user_id>')
 def delete_user_route(user_id):
