@@ -1,12 +1,121 @@
-from flask import Flask, render_template, request, redirect, session, url_for, flash, Response
+from flask import Flask, render_template, request, redirect, session, url_for, flash, Response, jsonify
 import sqlite3
+import requests
+import json
 import csv
 import io
+import os 
+from openai import OpenAI
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 
 # Crucial: Flask requires a secret key to securely sign the browser session cookies
 app.secret_key = 'edumax_super_secret_system_token_key'
+
+
+# --- Locate this block near the top area of your app.py file ---
+load_dotenv()
+
+# Fallback explicit variable definitions 
+GROQ_SECRET = os.environ.get("GROQ_API_KEY") 
+
+free_ai_client = OpenAI(
+    base_url="https://api.groq.com/openai/v1",
+    api_key=GROQ_SECRET  # Securely maps your active validated key directly
+)
+
+
+def google_search_tutor(query_text):
+    """Fetches real-time search context string blocks from Google via Serper."""
+    url = "https://serper.dev"  # <-- Update this specific URL path string!
+    payload = json.dumps({"q": query_text, "num": 3})
+    # ... rest of your search code remains identical ...
+    headers = {
+        'X-API-KEY': os.environ.get("SERPER_API_KEY"),
+        'Content-Type': 'application/json'
+    }
+    try:
+        response = requests.post(url, headers=headers, data=payload, timeout=5)
+        search_results = response.json()
+        
+        context_string = ""
+        for result in search_results.get('organic', []):
+            context_string += f"- {result.get('snippet')}\n"
+        return context_string
+    except Exception:
+        return "No real-time search engine context available."
+
+# 3. Add the route to render the Student Chat Interface page layout
+@app.route('/assistant')
+def assistant_page():
+    if not session.get('logged_in'):
+        return render_template('login.html', error="Please log in first.")
+    return render_template('assistant.html')
+
+# 4. Add the backend AJAX API processing engine route
+# 4. Add the backend AJAX API processing engine route
+@app.route('/api/ai/ask', methods=['POST'])
+def ask_ai_assistant():
+    if not session.get('logged_in'):
+        return jsonify({"answer": "Authentication required."}), 401
+        
+    data = request.get_json() or {}
+    student_question = data.get('question', '').strip()
+
+    if not student_question:
+        return jsonify({"answer": "Please type a valid question."}), 400
+
+    # 1. Isolate the search function in its own safe check block
+    live_web_facts = ""
+    try:
+        if os.environ.get("SERPER_API_KEY"):
+            live_web_facts = google_search_tutor(student_question)
+    except Exception as search_error:
+        print("GOOGLE SEARCH ERROR (Skipping):", str(search_error))
+
+    # 2. Structure your system prompt instructions
+    socratic_system_prompt = (
+        "You are the EduMax Socratic Academic Coach. Help the student learn by analyzing concepts, "
+        "NOT by doing their work. Follow these rules strictly:\n"
+        "1. NEVER output entire completed code blocks, full math solutions, or complete essays.\n"
+        "2. Provide structural templates or conceptual roadmaps with blanks (e.g., Use '[your variable]').\n"
+        "3. End with one direct follow-up question prompting the student's next logical step.\n"
+    )
+    
+    if live_web_facts:
+        socratic_system_prompt += f"\nUse this real-time context if relevant:\n{live_web_facts}"
+
+    # 3. Request completion from Groq API engine matrix
+      # 3. Request completion from Groq API engine matrix
+        # 3. Request completion from Groq API engine matrix
+    try:
+        response = free_ai_client.chat.completions.create(
+            model="openai/gpt-oss-20b",
+            messages=[
+                {"role": "system", "content": socratic_system_prompt},
+                {"role": "user", "content": student_question}
+            ],
+            max_tokens=300
+        )
+        
+        # --- FIX THIS SPECIFIC LINE REGION BELOW ---
+        if hasattr(response, 'choices') and isinstance(response.choices, list):
+            # Access the first choice out of the array index directly
+            ai_reply = response.choices[0].message.content
+        else:
+            # Fallback to standard OpenAI formatting layout
+            ai_reply = response.choices.message.content
+            
+    except Exception as ai_error:
+        print("GROQ API ENCOUNTERED ERROR:", str(ai_error))
+        ai_reply = "The study coach framework is currently updating. Please try again shortly."
+
+
+    # This line now sits cleanly outside the try/except block closures
+    return jsonify({"answer": ai_reply})
+
+
 
 # --- 1. PUBLIC ROUTE: HOME PAGE ---
 @app.route('/')

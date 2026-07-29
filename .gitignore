@@ -1,2 +1,4 @@
 edumax.db
 __pycache__/
+# Hide secret API keys and local environment variables
+.env
