@@ -151,6 +151,7 @@ def delete_user_route(user_id):
 
      # Pack a temporary text warning notification box message
    
+    record_activity(f"Permanently deleted User Account ID #{user_id}")
 
     return redirect(url_for('edit_users'))
 
@@ -222,6 +223,10 @@ def submit_new_user():
             SET username = ?, password = ?, is_admin = ?
             WHERE id = ?
         """, (new_username, new_password, int(new_role), form_user_id))
+        connection.commit()
+        connection.close()
+        # Log the UPDATE using the existing form_user_id
+        record_activity(f"Updated user account ID #{form_user_id} ({new_username})")
         flash('User account details updated successfully!', 'success')
         
     else:
@@ -230,11 +235,16 @@ def submit_new_user():
             INSERT INTO users (username, password, is_admin) 
             VALUES (?, ?, ?)
         """, (new_username, new_password, int(new_role)))
+
+        # Grab the newly generated ID from SQLite right after inserting
+        new_id = cursor.lastrowid
+        
+        connection.commit()
+        connection.close()
+        record_activity(f"Added new user ID #{new_id} ({new_username})")
         flash('New user account added successfully!', 'success')
         
-    connection.commit()
-    connection.close()
-        
+    
     # Route the administrator right back onto the user spreadsheet dashboard grid!
     return redirect(url_for('edit_users'))
 
@@ -273,10 +283,11 @@ def submit_announcement():
 
         print(f"Successfully CREATED a brand new announcement: {form_title}")
         flash('Brand new announcement published to live feeds!', 'success')
+       
         
     connection.commit()
     connection.close()
-    
+    record_activity(f"Added new announcement #{form_title}")
     # 3. Dynamic loop-back straight to your master control spreadsheet
     return redirect(url_for('edit_announcement_page'))
 
@@ -322,6 +333,33 @@ def logout_process():
     # 2. Redirect the user back to the homepage
     print("User session cleared successfully. Redirecting home.")
     return redirect(url_for('home_page'))
+
+def record_activity(action_description):
+    """Saves administrative activities to the database log table."""
+    current_user = session.get('username', 'System/Unknown')
+    
+    connection = sqlite3.connect('edumax.db')
+    cursor = connection.cursor()
+    cursor.execute(
+        "INSERT INTO audit_logs (username, action) VALUES (?, ?)",
+        (current_user, action_description)
+    )
+    connection.commit()
+    connection.close()
+
+@app.route('/admin/logs')
+def view_logs():
+    if not session.get('logged_in') or not session.get('is_admin'):
+        return render_template('login.html', error="Admin access required.")
+        
+    connection = sqlite3.connect('edumax.db')
+    cursor = connection.cursor()
+    # Pull newest actions first
+    cursor.execute("SELECT username, action, timestamp FROM audit_logs ORDER BY id DESC")
+    log_rows = cursor.fetchall()
+    connection.close()
+    
+    return render_template('logs.html', logs=log_rows)
 
 
 

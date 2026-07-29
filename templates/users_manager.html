@@ -111,7 +111,16 @@
                         <a href="{{ url_for('new_user_form') }}" class="btn-add">＋ Add New User Account</a>
                 </div>
 
-                
+                {% if session.get('logged_in') and session.get('is_admin') %}
+                <div></div>
+                    <!-- Admin Utilities Section -->
+                    <span style="margin: 0 10px;">|</span>
+                    <a href="{{ url_for('view_logs') }}" style="font-weight: bold; color: #d9534f;">
+                        🛡️ View Security Logs
+                    </a>
+                </div>
+                {% endif %}
+
                 <form method="GET" action="{{ url_for('edit_users') }}" style="margin-bottom: 20px;">
                 <!-- Keeps the typed string in place after submission, or stays blank on first load -->
                     <input type="text" name="search" placeholder="Search by username..." value="{{ search_query }}">

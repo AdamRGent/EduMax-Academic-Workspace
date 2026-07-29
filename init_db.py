@@ -47,7 +47,20 @@ cursor.execute("""
     )
 """)
 
-print("Database initialized! Added 'users' and 'announcements' tables cleanly.")
+#drop table audit logs if it exists
+cursor.execute("DROP TABLE IF EXISTS audit_logs")
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL,
+    action TEXT NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+)
+""")
+
+
+print("Database initialised! Added 'users' and 'announcements' tables cleanly.")
 
 
 # 5. Save (commit) the changes and close the connection safely
