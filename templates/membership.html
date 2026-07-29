@@ -74,6 +74,7 @@
                             <li style="color: rgba(255,255,255,0.3); padding: 0 0.25rem;">|</li>
                             <!-- Membership active highlight applied -->
                             <li><a class="nav-link active" href="{{ url_for('membership_page') }}">Membership</a></li>
+                            <li><a class="nav-link"  href="{{ url_for('assistant_page') }}"> AI Study Coach</a></li>
                             
                             {% if session.logged_in and session.is_admin %}
                                 <li style="color: rgba(255,255,255,0.3); padding: 0 0.25rem;">|</li>
